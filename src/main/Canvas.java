@@ -26,9 +26,21 @@ public class Canvas extends JPanel {
 		g.setColor(Color.WHITE);
 		g.fillRect(0, 0, getWidth(), getHeight());
 //		System.out.print("repaint");
-		for (_3DObject obj : Engine.global_obj_list) {
-			obj.render(g);
+		try {
+			for (_3DObject obj : Engine.global_obj_list) {
+				obj.render(g);
+			}
+		} catch (Exception e) {
+			
 		}
 		FaceShader.renderFaces(g);
+		
+		try {
+			for (_3DObject obj : Engine.global_obj_list) {
+				obj.postFrameRender(g);
+			}
+		} catch (Exception e) {
+			
+		}
 	}
 }

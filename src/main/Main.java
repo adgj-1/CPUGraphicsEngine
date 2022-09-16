@@ -18,6 +18,7 @@ public class Main {
 		c.addMouseMotionListener(new MouseMotionListener_());
 		j.setSize(600, 600);
 		j.setVisible(true);
+		j.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		Engine e = new Engine();
 		e.init();
 		e.startloop();

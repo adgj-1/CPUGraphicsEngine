@@ -5,14 +5,15 @@ import java.util.ArrayList;
 import java.util.List;
 
 import main.Engine;
+import main.materials.Material;
 import main.utils.Mat3;
 import main.utils.Mat4;
 import main.utils.Vector3;
 
 public class _3DObject {
-
 	List<Vector3> vertices;
 	List<Vector3> faces;
+	List<Material> materials;
 	
 	public Vector3 pos;
 	public Vector3 rot;
@@ -21,6 +22,7 @@ public class _3DObject {
 	Mat4 invtransform;
 	
 	public _3DObject() {
+		materials = new ArrayList<Material>();
 		vertices = new ArrayList<Vector3>();
 		faces = new ArrayList<Vector3>();
 		rot = new Vector3(0,0,0);
@@ -47,5 +49,14 @@ public class _3DObject {
 	
 	public void render(Graphics g) {
 		Engine.cam.render(g, this);
+	}
+	
+	public void postFrameRender(Graphics g) {
+		Engine.cam.postFrameRender(g, this);
+	}
+	
+	public void addFace(Vector3 face) {
+		faces.add(face);
+		materials.add(new Material());
 	}
 }
