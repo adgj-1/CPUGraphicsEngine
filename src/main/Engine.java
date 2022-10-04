@@ -1,6 +1,7 @@
 package main;
 
 import java.awt.Color;
+import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -9,7 +10,7 @@ import main.objects.Camera;
 import main.objects.Cube;
 import main.objects.Model;
 import main.objects._3DObject;
-import main.utils.FaceShader;
+import main.utils.ImageLoader;
 import main.utils.Vector2;
 import main.utils.Vector3;
 
@@ -19,13 +20,19 @@ public class Engine {
 	static Cube testcube;
 	static Cube testcube2;
 	static Model monkey;
+	static BufferedImage texturetest;
 	public void init() {
+//		texturetest = ImageLoader.loadImage("C:\\Users\\Aaron\\Desktop\\image\\emerald_block.png");
+		texturetest = ImageLoader.loadImage("C:\\Users\\Aaron\\Desktop\\Miscellaneous Images\\bliss.jpg");
 		cam = new Camera(new Vector3(0, 0, 0), new Vector3(0, 0, 0));
 		testcube = new Cube(new Vector3(-20,300f,-20), new Vector3(0,0,0), 50);
+		
+		testcube = new Cube(new Vector3(-20,300f,-20), new Vector3(0,0,0), 50, new BufferedImage[] {texturetest,texturetest,texturetest,texturetest,texturetest,texturetest});
 		testcube2 = new Cube(new Vector3(40,150f,-20), new Vector3(0,0,0), 50);
 		global_obj_list.add(testcube);
-		global_obj_list.add(testcube2);
+//		global_obj_list.add(testcube2);
 		monkey = new Model("C:\\Users\\Aaron\\Downloads\\suzanne.obj", new Vector3(0,0,0), -20, Color.CYAN);
+		
 		monkey.rot.y = (float) (1*Math.PI);
 		monkey.rot.x = (float) (0.5*Math.PI);
 		global_obj_list.add(monkey);
@@ -46,7 +53,7 @@ public class Engine {
 			
 			if (Camera.screenSize.x != Main.j.getWidth() || Camera.screenSize.y != Main.j.getHeight()) {
 				Camera.screenSize = new Vector2(Main.j.getWidth(), Main.j.getHeight());
-				FaceShader.resizeBuffer();
+				cam.faceShader.resizeBuffer();
 			}
 			
 			Main.c.repaint();

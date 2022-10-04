@@ -19,7 +19,8 @@ public class VertexShader {
 	public static Vector3 rasterizeZ(Vector4 vertex, Mat4 cameraTransform) {	
 		Vector4 vertexC = cameraTransform.dotVecMat(vertex);
 		Vector2 cameraSpace = new Vector2(vertexC.x/vertexC.y * zoom, vertexC.z/vertexC.y * zoom);
-		return new Vector3((cameraSpace.x + 0.5f) * Camera.screenSize.x, (cameraSpace.y + 0.5f) * Camera.screenSize.y, vertexC.y);
+		float screenMaxDim = Math.max(FragmentShader.resolutionX, FragmentShader.resolutionY);
+		return new Vector3((cameraSpace.x + 0.5f) * screenMaxDim, (cameraSpace.y + 0.5f) * screenMaxDim, vertexC.y);
 	}
 	
 }

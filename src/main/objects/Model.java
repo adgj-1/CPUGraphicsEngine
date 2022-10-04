@@ -6,6 +6,7 @@ import java.io.FileReader;
 import java.io.IOException;
 
 import main.materials.Material;
+import main.materials.MaterialEnumerator;
 import main.utils.Vector3;
 
 public class Model extends _3DObject {
@@ -48,11 +49,11 @@ public class Model extends _3DObject {
 	
 	public void addFace(Vector3 face) {
 		faces.add(face);
+		Material m = MaterialEnumerator.getNewMaterial(2);
 		if (c != null) {
-			materials.add(new Material(c));
-		} else {
-			materials.add(new Material());
+			m.setColor(c);
 		}
+		materials.add(m);
 	}
 
 }

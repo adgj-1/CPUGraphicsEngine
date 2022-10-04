@@ -8,7 +8,7 @@ import main.utils.Vector3;
 public class Material {
 
 	private static int indexCounter = 0;
-	private Color materialColor;
+	protected Color materialColor;
 	
 	public Material() {
 		materialColor = indexColor(indexCounter, 9);
@@ -23,17 +23,23 @@ public class Material {
 		return materialColor;
 	}
 	
-	public Color getColor(Vector2 mapping) {
-		return new Color(125, (int)(mapping.x * 255), (int)(mapping.y * 255));
+	/**
+	 * 
+	 * @param mapping - UV mapping coordinates of the fragment
+	 * @param v1 - screen coordinate of vertex 1 with Z axis
+	 * @param v2 - screen coordinate of vertex 2 with Z axis
+	 * @param v3 - screen coordinate of vertex 3 with Z axis
+	 * @param pos - screen coordinate of fragment to render
+	 * @param pointZ - Z axis of fragment to render
+	 * @return Color - the color of the fragment
+	 */
+	public Color getColor(Vector2 mapping, Vector3 v1, Vector3 v2, Vector3 v3, Vector2 pos, float pointZ) {
+		return getColor(v1, v2, v3, pos);
 	}
 	
-	public Color getColor(Vector3 v1, Vector3 v2, Vector3 v3, Vector2 pos, float pointZ) {
-		// color based on z depth
-//		return new Color((int)pointZ*2 % 255, (int)pointZ*2 % 255, (int)pointZ*2 % 255);
-		
-		// Preserve Color, Add z depth
-		return new Color((materialColor.getRed() * (int) pointZ*4)/255 % 255, (materialColor.getGreen() * (int)pointZ*4)/255 % 255, (materialColor.getBlue() * (int)pointZ*4)/255 % 255);
-	}
+	
+	
+	
 	
 	// Default mapping
 	public Vector2[] getTextureMap() {
@@ -87,5 +93,9 @@ public class Material {
 			return Color.BLACK;
 		}
 		}
+	}
+
+	public void setColor(Color c) {
+		materialColor = c;
 	}
 }

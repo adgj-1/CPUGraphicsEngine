@@ -5,7 +5,7 @@ import java.awt.Graphics;
 import java.util.List;
 
 import main.materials.Material;
-import main.utils.FaceShader;
+import main.utils.FragmentShader;
 import main.utils.Mat4;
 import main.utils.Vector2;
 import main.utils.Vector3;
@@ -14,10 +14,12 @@ import main.utils.VertexShader;
 
 public class Camera extends _3DObject {
 	public static Vector2 screenSize = new Vector2(600, 600);
+	public FragmentShader faceShader;
 	
 	public Camera(Vector3 pos, Vector3 rot) {
 		this.pos = pos;
 		this.rot = rot;
+		this.faceShader = new FragmentShader();
 		this.convertTransform();
 	}
 	
@@ -50,13 +52,13 @@ public class Camera extends _3DObject {
 		
 
 		
-		FaceShader.preRenderFace(pos1, pos2, pos3, faceMaterial);
+		faceShader.preRenderFace(pos1, pos2, pos3, faceMaterial);
 	}
 	
 	public void postFrameRender(Graphics g, _3DObject obj) {
-//		for (int i = 0; i < obj.faces.size(); i++) {
+		for (int i = 0; i < obj.faces.size(); i++) {
 //			overlayFace(g, obj.faces.get(i), obj.vertices, obj.transform, obj.materials.get(i));
-//		}
+		}
 	}
 	
 	public void overlayFace(Graphics g, Vector3 face, List<Vector3> vertices, Mat4 mLocalObj, Material faceMaterial) {
@@ -75,4 +77,7 @@ public class Camera extends _3DObject {
 		g.drawLine((int)pos2.x, (int)pos2.y, (int)pos3.x, (int)pos3.y);
 	}
 	
+	public void renderFaces(Graphics g) {
+		faceShader.renderFaces(g);
+	}
 }
