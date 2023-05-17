@@ -1,9 +1,10 @@
 package main.objects;
 
-import java.awt.Color;
 import java.awt.Graphics;
+import java.util.ArrayList;
 import java.util.List;
 
+import main.camera_overlays.CameraOverlay;
 import main.materials.Material;
 import main.utils.FragmentShader;
 import main.utils.Mat4;
@@ -15,6 +16,7 @@ import main.utils.VertexShader;
 public class Camera extends _3DObject {
 	public static Vector2 screenSize = new Vector2(600, 600);
 	public FragmentShader faceShader;
+	public List<CameraOverlay> overlays = new ArrayList<CameraOverlay>();
 	
 	public Camera(Vector3 pos, Vector3 rot) {
 		this.pos = pos;
@@ -25,20 +27,22 @@ public class Camera extends _3DObject {
 	
 	public void render(Graphics g, _3DObject obj) {
 		obj.convertTransform();
-		
-//		renderVertices(g, obj.vertices, obj.transform);
+		if (obj.overlayEnabled) {
+			// Renders vertex overlay only if object enables overlay
+			renderVertices(g, obj.vertices, obj.transform);
+		}
 		for (int i = 0; i < obj.faces.size(); i++) {
 			renderFace(g, obj.faces.get(i), obj.vertices, obj.transform, obj.materials.get(i));
 		}
 	}
 	
 	public void renderVertices(Graphics g, List<Vector3> vertices, Mat4 mLocalObj) {
-		for (int i = 0; i < vertices.size(); i++) {
-			Vector4 vertexW = mLocalObj.dotVecMat(vertices.get(i).toVec4());
-			Vector2 pos = VertexShader.rasterize(vertexW, invtransform);
-			g.setColor(Color.RED);
-			g.drawString("" + i, (int)pos.x + 5, (int)pos.y);
-			g.fillRect((int)pos.x, (int)pos.y, 1, 1);
+		try {
+			for (CameraOverlay o : overlays) {
+				o.overlayVertex(g, invtransform, vertices, mLocalObj);;
+			}
+		} catch (Exception e) {
+			
 		}
 	}
 	
@@ -56,25 +60,22 @@ public class Camera extends _3DObject {
 	}
 	
 	public void postFrameRender(Graphics g, _3DObject obj) {
+		if (!obj.overlayEnabled) {
+			return;
+		}
 		for (int i = 0; i < obj.faces.size(); i++) {
-//			overlayFace(g, obj.faces.get(i), obj.vertices, obj.transform, obj.materials.get(i));
+			overlayFace(g, obj.faces.get(i), obj.vertices, obj.transform, obj.materials.get(i));
 		}
 	}
 	
 	public void overlayFace(Graphics g, Vector3 face, List<Vector3> vertices, Mat4 mLocalObj, Material faceMaterial) {
-		Vector4 vertexW1 = mLocalObj.dotVecMat(vertices.get((int) (face.x)).toVec4());
-		Vector4 vertexW2 = mLocalObj.dotVecMat(vertices.get((int) (face.y)).toVec4());
-		Vector4 vertexW3 = mLocalObj.dotVecMat(vertices.get((int) (face.z)).toVec4());
-		Vector3 pos1 = VertexShader.rasterizeZ(vertexW1, invtransform);
-		Vector3 pos2 = VertexShader.rasterizeZ(vertexW2, invtransform);
-		Vector3 pos3 = VertexShader.rasterizeZ(vertexW3, invtransform);
-		
-		g.setColor(Color.GREEN);
-		g.drawLine((int)pos1.x, (int)pos1.y, (int)pos2.x, (int)pos2.y);
-		g.setColor(Color.RED);
-		g.drawLine((int)pos1.x, (int)pos1.y, (int)pos3.x, (int)pos3.y);
-		g.setColor(Color.BLUE);
-		g.drawLine((int)pos2.x, (int)pos2.y, (int)pos3.x, (int)pos3.y);
+		try {
+			for (CameraOverlay o : overlays) {
+				o.overlayFace(g, invtransform, face, vertices, mLocalObj, faceMaterial);
+			}
+		} catch (Exception e) {
+			
+		}
 	}
 	
 	public void renderFaces(Graphics g) {

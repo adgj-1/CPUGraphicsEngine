@@ -14,14 +14,32 @@ public class FragmentShader {
 	public static float pixelWidth = 1;
 	public static float pixelHeight = 1;
 	public static boolean scaleToProportion = true;
+	public static int depthCulling = 30;
 	
 	public void preRenderFace(Vector3 v1, Vector3 v2, Vector3 v3, Material c) {
 		if (bufferResizing) {
 			return;
 		}
+		
+		// Face Depth Culling
+		if (v1.z < depthCulling && v2.z < depthCulling && v3.z < depthCulling) {
+			return;
+		}
+		
+		// Face Edge Culling
+		if (v1.x < 0 || v1.x >= framebuffer.length || v1.y < 0 || v1.y >= framebuffer[0].length) {
+			if (v2.x < 0 || v2.x >= framebuffer.length || v2.y < 0 || v2.y >= framebuffer[0].length) {
+				if (v3.x < 0 || v3.x >= framebuffer.length || v3.y < 0 || v3.y >= framebuffer[0].length) {
+					return;
+				}
+			}
+		}
+		
 		for (int i = (int) Math.min(Math.min(v1.x, v2.x), v3.x); i < Math.max(Math.max(v1.x, v2.x), v3.x); i++) {
 			for (int j = (int) Math.min(Math.min(v1.y, v2.y), v3.y); j < Math.max(Math.max(v1.y, v2.y), v3.y); j++) {
 				if (isPixelInTriangle(v1, v2, v3, new Vector2(i, j))) {
+					
+					// Fragment Edge Culling
 					if (i < 0 || i >= framebuffer.length || j < 0 || j >= framebuffer[0].length) {
 						continue;
 					}
@@ -29,7 +47,11 @@ public class FragmentShader {
 					Vector3 barycentric = calculateBarycentric(new Vector2(v1.x, v1.y), new Vector2(v2.x, v2.y), new Vector2(v3.x, v3.y), new Vector2(i, j));
 					
 					float pointZ = interpolateZBuffer(barycentric, v1.z, v2.z, v3.z);
-
+					
+					// Fragment Depth Culling
+					if (pointZ < depthCulling) {
+						continue;
+					}
 
 					if (framebuffer[i][j] == null || pointZ < framebuffer[i][j].z) {
 						Vector2[] tmap = c.getTextureMap();
@@ -91,8 +113,10 @@ public class FragmentShader {
 			if (scaleToProportion) {
 				generateProportionalResolution();
 			}
-			pixelWidth = (float)(Math.round((Camera.screenSize.x / resolutionX)) * 10000)/10000;
-			pixelHeight = (float)(Math.round((Camera.screenSize.y / resolutionY)) * 10000)/10000;
+			
+			pixelWidth = (Camera.screenSize.x / resolutionX);
+			pixelHeight = (Camera.screenSize.y / resolutionY);
+
 			framebuffer = new Pixel[resolutionX][resolutionY];
 			bufferResizing = false;
 			return;

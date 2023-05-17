@@ -11,6 +11,7 @@ import main.utils.Mat4;
 import main.utils.Vector3;
 
 public class _3DObject {
+	public boolean overlayEnabled = true;
 	List<Vector3> vertices;
 	List<Vector3> faces;
 	List<Material> materials;
